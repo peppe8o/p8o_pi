@@ -36,6 +36,7 @@ class traffic_light:
     self.leds.value = (1, 0, 0) # Activates the GREEN LED and switches off all the other LEDs
 
   def stop(self, yellow_TIME = 3):
+    self.leds.value = (1, 0, 0) # Make sure that the green LED is activated and the red LED is off 
     self.leds.yellow.blink(on_time=0.8, off_time=0.8) # Blinks the YELLOW LED for "yellow_TIME" seconds with the following sleep statement
     sleep(yellow_TIME)
     self.leds.value = (0, 1, 0) # Activates the RED LED and switches off all the other LEDs
