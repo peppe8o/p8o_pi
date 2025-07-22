@@ -3,6 +3,7 @@ Raspberry PI library for Python
 -------------------------------------------------------------------------------------------------------------------------
 This library supports the following devices/sensors with Raspberry PI computer boards:
 
+- passive buzzer
 - 7-segment display
 - 7-segment 4-digit display
 - traffic light module
