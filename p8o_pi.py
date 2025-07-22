@@ -21,8 +21,8 @@
 # Author: peppe8o
 # Blog: https://peppe8o.com
 #
-# v2
-# date: 5th Jun, 2025
+# v1.3
+# date: 18th Jul, 2025
 
 import gpiozero
 from time import sleep
@@ -30,20 +30,50 @@ from gpiozero import DigitalOutputDevice
 import re
 import multiprocessing
 
+# ---------------------------------------------------------------------------------------------->
+# Class for passive (tonal) buzzer
+# ---------------------------------------------------------------------------------------------->
+
+class buzzer:
+  def __init__(self, buzzer_PIN):
+    self.duty_cycle = 0.1 # Duty cycle set to this value gives the best output quality. You can change it from 0 to 1. Duty cycle to 0 stops the buzzer
+    self.b = gpiozero.PWMOutputDevice(buzzer_PIN)
+
+  def play(self, tone, on_time = 0, off_time = 0):
+    if tone == "":
+       self.stop()
+       return True
+
+    self.b.value = self.duty_cycle # set the PWM duty cycle
+
+    if isinstance(tone, int) and tone <= 127:
+       self.b.frequency = gpiozero.tones.Tone.from_midi(tone) # This avoids getting a terminal warning when the input tone is probably a midi input
+    else:
+       self.b.frequency = gpiozero.tones.Tone(tone).frequency # Use the Tone class to get the frequency. Works with frequency, midi, and note
+
+    if on_time > 0: sleep(on_time) # If an on_time is set, the sleep makes the buzzer playing for the corresponding number of seconds
+
+    if off_time > 0: # if an off_time is set, the buzzer remains off for the off_time and it returns to the program after this time
+       self.stop()
+       sleep(off_time)
+
+  def stop(self):
+    self.b.value = 0
+
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
 # Class for 7-segment display
 # --------------------------------------------------------------------------------------------------------------------------------------------
 class seven_segment:
   def __init__(self, a_PIN, b_PIN, c_PIN, d_PIN, e_PIN, f_PIN, g_PIN, dot_PIN):
-    self.a = gpiozero.DigitalOutputDevice(14)
-    self.b = gpiozero.DigitalOutputDevice(15)
-    self.c = gpiozero.DigitalOutputDevice(18)
-    self.d = gpiozero.DigitalOutputDevice(23)
-    self.e = gpiozero.DigitalOutputDevice(24)
-    self.f = gpiozero.DigitalOutputDevice(25)
-    self.g = gpiozero.DigitalOutputDevice(8)
-    self.dot = gpiozero.DigitalOutputDevice(7)
+    self.a = gpiozero.DigitalOutputDevice(a_PIN)
+    self.b = gpiozero.DigitalOutputDevice(b_PIN)
+    self.c = gpiozero.DigitalOutputDevice(c_PIN)
+    self.d = gpiozero.DigitalOutputDevice(d_PIN)
+    self.e = gpiozero.DigitalOutputDevice(e_PIN)
+    self.f = gpiozero.DigitalOutputDevice(f_PIN)
+    self.g = gpiozero.DigitalOutputDevice(g_PIN)
+    self.dot = gpiozero.DigitalOutputDevice(dot_PIN)
 
     self.arrSeg = {\
           "0":[1,1,1,1,1,1,0],\
